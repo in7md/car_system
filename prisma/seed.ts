@@ -1,98 +1,60 @@
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Seeding database...");
+  console.log('🌱 Starting Database Seeding...');
 
-  // 1. Create Roles & Permissions
-  console.log("Seeding Roles...");
-  const roles = ["Owner", "Manager", "Accountant", "Employee", "Viewer"];
-  for (const roleName of roles) {
-    await prisma.role.upsert({
-      where: { name: roleName },
-      update: {},
-      create: { name: roleName, description: `System ${roleName} role` },
-    });
-  }
+  // 1. Roles & Permissions (If using RBAC via DB, but we mainly use enums/strings for Role)
+  console.log('✅ Roles predefined via Schema Enums/Strings.');
 
-  // 2. Create Expense Categories
-  console.log("Seeding Expense Categories...");
+  // 2. Default Expense Categories
   const categories = [
-    "Mechanical", "Electrical", "Tires", "Battery", "Paint", 
-    "Bodywork", "Spare Parts", "Cleaning", "Inspection", 
-    "Transportation", "Insurance", "Registration", "Fines", "Other"
+    { name: 'ميكانيكا', description: 'أعطال وإصلاحات ميكانيكية' },
+    { name: 'كهرباء', description: 'إصلاحات كهربائية وإلكترونية' },
+    { name: 'صباغة وسمكرة', description: 'أعمال الصبغ والسمكرة' },
+    { name: 'تنجيد', description: 'أعمال التنجيد الداخلي' },
+    { name: 'أخرى', description: 'مصروفات متنوعة' }
   ];
+
   for (const cat of categories) {
     await prisma.expenseCategory.upsert({
-      where: { name: cat },
+      where: { name: cat.name },
       update: {},
-      create: { name: cat, description: `${cat} expenses` },
+      create: cat,
     });
   }
+  console.log('✅ Expense Categories Seeded.');
 
-  // 3. Create Default Accounts (Test Users)
-  console.log("Seeding Test Users...");
-  const testUsers = [
-    { email: "owner@test.com", name: "Owner", role: "Owner" },
-    { email: "manager@test.com", name: "Manager", role: "Manager" },
-    { email: "employee@test.com", name: "Employee", role: "Employee" },
-    { email: "accountant@test.com", name: "Accountant", role: "Accountant" },
-    { email: "viewer@test.com", name: "Viewer", role: "Viewer" },
-    { email: "admin@example.com", name: "System Admin", role: "Owner" } // Original admin
-  ];
+  // First, ensure OWNER role exists
+  const ownerRole = await prisma.role.upsert({
+    where: { name: 'OWNER' },
+    update: {},
+    create: { name: 'OWNER', description: 'System Owner with full access' }
+  });
 
-  const passwordHash = await bcrypt.hash("password123", 10);
-
-  for (const tu of testUsers) {
-    const existing = await prisma.user.findUnique({ where: { email: tu.email } });
-    if (!existing) {
-      const roleRecord = await prisma.role.findUnique({ where: { name: tu.role } });
-      if (roleRecord) {
-        await prisma.user.create({
-          data: {
-            name: tu.name,
-            email: tu.email,
-            passwordHash: tu.email === "admin@example.com" ? await bcrypt.hash("admin123", 10) : passwordHash,
-            isActive: true,
-            roles: {
-              create: { roleId: roleRecord.id }
-            }
-          }
-        });
-        console.log(`User created: ${tu.email}`);
-      }
+  const ownerEmail = 'admin@inventrax.com';
+  const hashedPassword = await bcrypt.hash('inventrax@2026', 12);
+  
+  const owner = await prisma.user.upsert({
+    where: { email: ownerEmail },
+    update: {},
+    create: {
+      name: 'Super Admin',
+      email: ownerEmail,
+      passwordHash: hashedPassword,
+      roles: { create: { roleId: ownerRole.id } }
     }
-  }
+  });
+  console.log(`✅ Super Admin Account Seeded (${owner.email}).`);
 
-  // 4. Default System Settings
-  console.log("Seeding System Settings...");
-  const defaultSettings = [
-    { key: "businessName", value: "Car Dealership", description: "اسم المعرض الافتراضي" },
-    { key: "currency", value: "BHD", description: "العملة الافتراضية" },
-    { key: "businessPhone", value: "12345678", description: "رقم الهاتف" },
-    { key: "crNumber", value: "000000-1", description: "رقم السجل التجاري" },
-  ];
-
-  for (const setting of defaultSettings) {
-    await prisma.systemSetting.upsert({
-      where: { key: setting.key },
-      update: {},
-      create: {
-        key: setting.key,
-        value: setting.value,
-        description: setting.description,
-      },
-    });
-  }
-
-  console.log("Seeding completed successfully.");
+  console.log('🎉 Seeding completed successfully!');
 }
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error('❌ Seeding failed: ', e);
     process.exit(1);
   })
   .finally(async () => {

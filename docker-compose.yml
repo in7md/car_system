@@ -1,39 +1,31 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgres:15-alpine
-    container_name: car_system_db
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgrespassword
-      POSTGRES_DB: car_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d car_db"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  app:
+  web:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: car_system_app
-    restart: always
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://postgres:postgrespassword@db:5432/car_db?schema=public
+      - DATABASE_URL=postgresql://postgres:postgrespassword@db:5432/inventrax
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-your_super_secret_jwt_key_here}
       - NEXTAUTH_URL=http://localhost:3000
-      - NEXTAUTH_SECRET=generate_your_own_secret_key_in_production
     depends_on:
-      db:
-        condition: service_healthy
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: inventrax
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
 
 volumes:
-  pgdata:
+  postgres_data:

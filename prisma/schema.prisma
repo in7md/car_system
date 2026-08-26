@@ -59,7 +59,8 @@ model User {
   createdSellers    Seller[]               @relation("SellerCreatedBy")
   createdPurchases  Purchase[]             @relation("PurchaseCreatedBy")
   createdPayments   PurchasePayment[]      @relation("PaymentCreatedBy")
-  createdExpenses   Expense[]              @relation("ExpenseCreatedBy")
+  createdExpenses Expense[]          @relation("ExpenseCreatedBy")
+  suspiciousActivities SuspiciousActivity[] @relation("EmployeeSuspiciousActivity")
   createdCustomers  Customer[]             @relation("CustomerCreatedBy")
   createdSales      Sale[]                 @relation("SaleCreatedBy")
   createdSalePayments SalePayment[]        @relation("SalePaymentCreatedBy")
@@ -250,7 +251,10 @@ model Expense {
   description     String?
   vendorName      String?
   referenceNumber String?
-  status          String          @default("PAID") // PAID, UNPAID
+  status          String          @default("PAID") // PAID, UNPAID, PENDING, REJECTED
+  invoiceUrl      String?
+  invoiceHash     String?
+  
   category        ExpenseCategory @relation(fields: [categoryId], references: [id])
   categoryId      String
   vehicle         Vehicle?        @relation(fields: [vehicleId], references: [id])
@@ -260,6 +264,21 @@ model Expense {
   deletedAt       DateTime?
   createdBy       User?           @relation("ExpenseCreatedBy", fields: [createdById], references: [id])
   createdById     String?
+
+  suspiciousActivities SuspiciousActivity[]
+}
+
+model SuspiciousActivity {
+  id          String   @id @default(uuid())
+  type        String   // DUPLICATE_INVOICE, HIGH_AMOUNT, RAPID_FREQUENCY
+  description String
+  expenseId   String?
+  expense     Expense? @relation(fields: [expenseId], references: [id])
+  employeeId  String?
+  employee    User?    @relation("EmployeeSuspiciousActivity", fields: [employeeId], references: [id])
+  status      String   @default("OPEN") // OPEN, UNDER_REVIEW, RESOLVED, DISMISSED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
   
 model Customer {  

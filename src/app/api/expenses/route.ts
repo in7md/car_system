@@ -71,6 +71,58 @@ async function createExpenseHandler(req: NextRequest, context: any, session: any
       include: { category: true }
     });
 
+    // -------------------------------------------------------------
+    // SUSPICIOUS ACTIVITY DETECTION (AI AI-Suite)
+    // -------------------------------------------------------------
+    
+    // 1. High Amount Check
+    const similarExpenses = await prisma.expense.findMany({
+      where: { categoryId, deletedAt: null }
+    });
+    
+    if (similarExpenses.length >= 3) {
+      const totalAmount = similarExpenses.reduce((sum, e) => sum + e.amount, 0);
+      const avgAmount = totalAmount / similarExpenses.length;
+      
+      if (amount > avgAmount * 2) {
+        await prisma.suspiciousActivity.create({
+          data: {
+            type: "HIGH_AMOUNT",
+            description: `المصروف #${expense.id} بمبلغ ${amount} يتجاوز بكثير متوسط الصرف لهذه الفئة (${avgAmount.toFixed(2)}).`,
+            expenseId: expense.id,
+            employeeId: userId,
+            status: "OPEN"
+          }
+        });
+      }
+    }
+
+    // 2. Rapid Frequency Check
+    if (vendorName) {
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+      const recentToVendor = await prisma.expense.count({
+        where: {
+          createdById: userId,
+          vendorName,
+          createdAt: { gte: oneHourAgo }
+        }
+      });
+      
+      if (recentToVendor >= 3) {
+        await prisma.suspiciousActivity.create({
+          data: {
+            type: "RAPID_FREQUENCY",
+            description: `الموظف أدخل أكثر من 3 فواتير لنفس المورد (${vendorName}) خلال ساعة واحدة.`,
+            expenseId: expense.id,
+            employeeId: userId,
+            status: "OPEN"
+          }
+        });
+      }
+    }
+
+    // -------------------------------------------------------------
+
     await logAudit("Expense Created", expense.id, "Expense", userId, { 
       amount, 
       category: expense.category.name,
