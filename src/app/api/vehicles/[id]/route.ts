@@ -135,4 +135,5 @@ export const PATCH = withAuth(undefined, async (req: Request, context: any, sess
   return updateVehicleHandler(req, context, session);
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const DELETE = withAuth("vehicles.delete", deleteVehicleHandler as any);
