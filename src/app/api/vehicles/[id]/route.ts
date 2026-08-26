@@ -116,8 +116,23 @@ async function deleteVehicleHandler(req: Request, context: { params: Promise<{ i
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const GET = withAuth("vehicles.read", getVehicleHandler as any);
+export const GET = withAuth(undefined, async (req: Request, context: any, session: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userRole = ((session?.user as any)?.role || "").toUpperCase();
+  if (!["OWNER", "MANAGER", "ACCOUNTANT", "EMPLOYEE"].includes(userRole)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  return getVehicleHandler(req, context, session);
+});
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const PATCH = withAuth("vehicles.update", updateVehicleHandler as any);
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const PATCH = withAuth(undefined, async (req: Request, context: any, session: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userRole = ((session?.user as any)?.role || "").toUpperCase();
+  if (!["OWNER", "MANAGER", "ACCOUNTANT", "EMPLOYEE"].includes(userRole)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  return updateVehicleHandler(req, context, session);
+});
+
 export const DELETE = withAuth("vehicles.delete", deleteVehicleHandler as any);

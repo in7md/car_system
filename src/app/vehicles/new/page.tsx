@@ -29,6 +29,9 @@ export default function NewVehiclePage() {
         }
       }
     }
+    
+    // Ensure status is present
+    payload.status = payload.status || "PURCHASED";
 
     try {
       const res = await fetch("/api/vehicles", {

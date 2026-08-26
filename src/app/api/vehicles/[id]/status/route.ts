@@ -59,4 +59,11 @@ async function updateStatusHandler(req: Request, context: { params: Promise<{ id
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const PATCH = withAuth("vehicles.update", updateStatusHandler as any);
+export const PATCH = withAuth(undefined, async (req: Request, context: any, session: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userRole = ((session?.user as any)?.role || "").toUpperCase();
+  if (!["OWNER", "MANAGER", "ACCOUNTANT", "EMPLOYEE"].includes(userRole)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  return updateStatusHandler(req, context, session);
+});

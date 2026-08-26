@@ -38,6 +38,13 @@ async function getVehiclesHandler(req: Request, context: any, session: any) {
 async function createVehicleHandler(req: Request, context: any, session: any) {
   try {
     const body = await req.json();
+    
+    // Sanitize status to prevent validation errors
+    const validStatuses = ['PURCHASED', 'INSPECTION', 'UNDER_REPAIR', 'READY_FOR_SALE', 'LISTED_FOR_SALE', 'SOLD', 'CLOSED'];
+    if (!validStatuses.includes(body.status)) {
+      body.status = 'PURCHASED';
+    }
+    
     const result = createVehicleSchema.safeParse(body);
     
     if (!result.success) {

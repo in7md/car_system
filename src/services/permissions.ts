@@ -23,6 +23,17 @@ export async function getUserPermissions(userId: string): Promise<string[]> {
   const permissions = new Set<string>();
 
   for (const userRole of userRoles) {
+    const roleName = userRole.role.name.toUpperCase();
+    
+    // Inject default permissions for EMPLOYEE if DB is empty
+    if (roleName === "EMPLOYEE") {
+      permissions.add("vehicles.read");
+      permissions.add("vehicles.create");
+      permissions.add("vehicles.update");
+      permissions.add("expenses.read");
+      permissions.add("expenses.create");
+    }
+
     for (const rolePerm of userRole.role.permissions) {
       permissions.add(rolePerm.permission.name);
     }
