@@ -35,7 +35,7 @@ async function getKpisHandler(req: NextRequest, context: any, session: any) {
 
     // 4. Financials - Approved Expenses
     const expensesResult = await prisma.expense.aggregate({
-      where: { deletedAt: null, status: "APPROVED" },
+      where: { deletedAt: null, status: { in: ["APPROVED", "PAID"] } },
       _sum: { amount: true }
     });
     const totalExpenses = expensesResult._sum.amount || 0;
@@ -48,7 +48,7 @@ async function getKpisHandler(req: NextRequest, context: any, session: any) {
         vehicle: {
           select: {
             purchases: { where: { deletedAt: null }, select: { purchasePrice: true } },
-            expenses: { where: { deletedAt: null, status: "APPROVED" }, select: { amount: true } }
+            expenses: { where: { deletedAt: null, status: { in: ["APPROVED", "PAID"] } }, select: { amount: true } }
           }
         },
         payments: { where: { deletedAt: null }, select: { amount: true } }

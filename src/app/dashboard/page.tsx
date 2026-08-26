@@ -87,6 +87,10 @@ export default function DashboardPage() {
     );
   }
 
+  if (!kpis || !charts) {
+    return null; // or empty state if we wanted
+  }
+
   return (
     <div className="max-w-[1400px] mx-auto space-y-8" dir="rtl">
       
@@ -119,7 +123,7 @@ export default function DashboardPage() {
           <div className="flex justify-between items-start mb-4 relative">
             <div>
               <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">رأس المال النشط</p>
-              <h2 className="text-3xl font-black text-slate-900">{kpis.totalActiveCapital.toLocaleString()} <span className="text-lg font-bold text-slate-400">BHD</span></h2>
+              <h2 className="text-3xl font-black text-slate-900">{(kpis?.totalActiveCapital || 0).toLocaleString()} <span className="text-lg font-bold text-slate-400">BHD</span></h2>
             </div>
             <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
               <Wallet className="w-5 h-5" />
@@ -137,7 +141,7 @@ export default function DashboardPage() {
           <div className="flex justify-between items-start mb-4 relative">
             <div>
               <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">إجمالي المصروفات</p>
-              <h2 className="text-3xl font-black text-slate-900">{kpis.totalExpenses.toLocaleString()} <span className="text-lg font-bold text-slate-400">BHD</span></h2>
+              <h2 className="text-3xl font-black text-slate-900">{(kpis?.totalExpenses || 0).toLocaleString()} <span className="text-lg font-bold text-slate-400">BHD</span></h2>
             </div>
             <div className="p-2.5 bg-rose-50 text-rose-600 rounded-xl">
               <Receipt className="w-5 h-5" />
@@ -154,7 +158,7 @@ export default function DashboardPage() {
           <div className="flex justify-between items-start mb-4 relative">
             <div>
               <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">إجمالي المبيعات</p>
-              <h2 className="text-3xl font-black text-slate-900">{kpis.totalSalesRevenue.toLocaleString()} <span className="text-lg font-bold text-slate-400">BHD</span></h2>
+              <h2 className="text-3xl font-black text-slate-900">{(kpis?.totalSalesRevenue || 0).toLocaleString()} <span className="text-lg font-bold text-slate-400">BHD</span></h2>
             </div>
             <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl">
               <TrendingUp className="w-5 h-5" />
@@ -164,15 +168,13 @@ export default function DashboardPage() {
 
         {/* Card 4: Net Profit */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden group">
-          <div className="absolute -right-4 -top-4 w-24 h-24 bg-slate-50 rounded-full blur-2xl group-hover:bg-slate-100 transition-colors"></div>
+          <div className="absolute -right-4 -top-4 w-24 h-24 bg-amber-50 rounded-full blur-2xl group-hover:bg-amber-100 transition-colors"></div>
           <div className="flex justify-between items-start mb-4 relative">
             <div>
-              <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">صافي الأرباح المحققة</p>
-              <h2 className={`text-3xl font-black ${kpis.totalNetProfit >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                {kpis.totalNetProfit > 0 ? '+' : ''}{kpis.totalNetProfit.toLocaleString()} <span className="text-lg font-bold opacity-50">BHD</span>
-              </h2>
+              <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">صافي الأرباح</p>
+              <h2 className="text-3xl font-black text-slate-900">{(kpis?.totalNetProfit || 0).toLocaleString()} <span className="text-lg font-bold text-slate-400">BHD</span></h2>
             </div>
-            <div className={`p-2.5 rounded-xl ${kpis.totalNetProfit >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+            <div className="p-2.5 bg-amber-50 text-amber-600 rounded-xl">
               <Activity className="w-5 h-5" />
             </div>
           </div>
@@ -185,7 +187,7 @@ export default function DashboardPage() {
           </div>
           <div>
             <p className="text-slate-500 text-xs font-bold uppercase mb-1">السيارات المتاحة</p>
-            <h2 className="text-2xl font-black text-slate-900">{kpis.inventoryAvailable} سيارة</h2>
+            <h2 className="text-2xl font-black text-slate-900">{kpis?.readyForSale || 0} سيارة</h2>
           </div>
         </div>
 
@@ -196,7 +198,7 @@ export default function DashboardPage() {
           </div>
           <div>
             <p className="text-slate-500 text-xs font-bold uppercase mb-1">السيارات المباعة</p>
-            <h2 className="text-2xl font-black text-slate-900">{kpis.inventorySold} سيارة</h2>
+            <h2 className="text-2xl font-black text-slate-900">{kpis?.soldCount || 0} سيارة</h2>
           </div>
         </div>
         
@@ -207,7 +209,7 @@ export default function DashboardPage() {
           </div>
           <div>
             <p className="text-slate-500 text-xs font-bold uppercase mb-1">تحت الإصلاح</p>
-            <h2 className="text-2xl font-black text-slate-900">{kpis.inventoryMaintenance} سيارة</h2>
+            <h2 className="text-2xl font-black text-slate-900">{kpis?.underRepair || 0} سيارة</h2>
           </div>
         </div>
 
@@ -218,7 +220,7 @@ export default function DashboardPage() {
           </div>
           <div>
             <p className="text-slate-500 text-xs font-bold uppercase mb-1">متوسط الربح للسيارة</p>
-            <h2 className="text-2xl font-black text-slate-900">{kpis.averageProfitPerCar.toLocaleString(undefined, { maximumFractionDigits: 0 })} <span className="text-sm">BHD</span></h2>
+            <h2 className="text-2xl font-black text-slate-900">{(kpis?.averageProfitPerCar || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })} <span className="text-sm">BHD</span></h2>
           </div>
         </div>
 
@@ -230,30 +232,34 @@ export default function DashboardPage() {
         {/* Financial Flow Area Chart */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
           <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-            <Activity className="w-5 h-5 text-indigo-500" /> التدفق المالي (مشتريات مقابل مبيعات)
+            <Activity className="w-5 h-5 text-indigo-500" /> التدفق المالي (مبيعات مقابل أرباح)
           </h3>
           <div className="h-80 w-full" dir="ltr">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={charts.monthlyFinancials} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
-                  </linearGradient>
-                  <linearGradient id="colorPurchases" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366F1" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#6366F1" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                <XAxis dataKey="month" stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value / 1000}k`} />
-                <RechartsTooltip content={<CustomTooltip />} />
-                <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
-                <Area type="monotone" name="المشتريات" dataKey="purchases" stroke="#6366F1" strokeWidth={3} fillOpacity={1} fill="url(#colorPurchases)" />
-                <Area type="monotone" name="المبيعات" dataKey="sales" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" />
-              </AreaChart>
-            </ResponsiveContainer>
+            {charts?.monthlySalesTrend && charts.monthlySalesTrend.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={charts.monthlySalesTrend} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10B981" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366F1" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#6366F1" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                  <XAxis dataKey="month" stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value / 1000}k`} />
+                  <RechartsTooltip content={<CustomTooltip />} />
+                  <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
+                  <Area type="monotone" name="الأرباح" dataKey="profit" stroke="#6366F1" strokeWidth={3} fillOpacity={1} fill="url(#colorProfit)" />
+                  <Area type="monotone" name="المبيعات" dataKey="sales" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-full text-slate-400">لا توجد بيانات مبيعات</div>
+            )}
           </div>
         </div>
 
@@ -263,33 +269,41 @@ export default function DashboardPage() {
             <Receipt className="w-5 h-5 text-rose-500" /> المصروفات حسب الفئة
           </h3>
           <div className="h-80 w-full" dir="ltr">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={charts.expensesByCategory} layout="vertical" margin={{ top: 0, right: 30, left: 40, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#E2E8F0" />
-                <XAxis type="number" stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis dataKey="category" type="category" stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} />
-                <RechartsTooltip content={<CustomTooltip />} />
-                <Bar dataKey="amount" name="المبلغ" radius={[0, 4, 4, 0]}>
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  {charts.expensesByCategory.map((entry: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            {charts?.expensesByCategory && charts.expensesByCategory.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={charts.expensesByCategory} layout="vertical" margin={{ top: 0, right: 30, left: 40, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E2E8F0" />
+                  <XAxis type="number" stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value / 1000}k`} />
+                  <YAxis dataKey="name" type="category" stroke="#64748B" fontSize={13} fontWeight="bold" tickLine={false} axisLine={false} />
+                  <RechartsTooltip content={<CustomTooltip />} />
+                  <Bar dataKey="value" name="المبلغ" radius={[0, 4, 4, 0]} barSize={24}>
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    {charts.expensesByCategory.map((entry: any, index: number) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-full text-slate-400">لا توجد مصاريف معتمدة</div>
+            )}
           </div>
         </div>
 
         {/* Vehicles by Status Pie Chart */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2">
-          <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-            <Car className="w-5 h-5 text-indigo-500" /> توزيع السيارات حسب الحالة
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2 max-w-2xl mx-auto w-full">
+          <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2 justify-center">
+            <PieChartIcon className="w-5 h-5 text-amber-500" /> حالة الأسطول
           </h3>
           <div className="h-80 w-full flex justify-center" dir="ltr">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={charts.vehiclesByStatus}
+                  data={[
+                    { status: "جاهزة للبيع", count: kpis?.readyForSale || 0 },
+                    { status: "تحت الإصلاح", count: kpis?.underRepair || 0 },
+                    { status: "تم بيعها", count: kpis?.soldCount || 0 },
+                  ].filter(v => v.count > 0)}
                   cx="50%"
                   cy="50%"
                   innerRadius={80}
@@ -299,12 +313,15 @@ export default function DashboardPage() {
                   nameKey="status"
                   label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
                 >
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  {charts.vehiclesByStatus.map((entry: any, index: number) => (
+                  {[
+                    { status: "جاهزة للبيع", count: kpis?.readyForSale || 0 },
+                    { status: "تحت الإصلاح", count: kpis?.underRepair || 0 },
+                    { status: "تم بيعها", count: kpis?.soldCount || 0 },
+                  ].filter(v => v.count > 0).map((entry: { status: string; count: number }, index: number) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <RechartsTooltip content={<CustomTooltip />} />
+                <RechartsTooltip />
                 <Legend iconType="circle" />
               </PieChart>
             </ResponsiveContainer>

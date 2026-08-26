@@ -12,7 +12,7 @@ async function getChartsHandler(req: NextRequest, context: any, session: any) {
         vehicle: {
           include: {
             purchases: { where: { deletedAt: null } },
-            expenses: { where: { deletedAt: null, status: "APPROVED" } }
+            expenses: { where: { deletedAt: null, status: { in: ["APPROVED", "PAID"] } } }
           }
         }
       },
@@ -51,7 +51,7 @@ async function getChartsHandler(req: NextRequest, context: any, session: any) {
 
     // 3. Expenses by Category
     const expenses = await prisma.expense.findMany({
-      where: { deletedAt: null, status: "APPROVED" },
+      where: { deletedAt: null, status: { in: ["APPROVED", "PAID"] } },
       include: { category: true }
     });
 
