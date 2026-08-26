@@ -91,6 +91,21 @@ async function createVehicleHandler(req: Request, context: any, session: any) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const GET = withAuth("vehicles.read", getVehiclesHandler as any);
+export const GET = withAuth(undefined, async (req: Request, context: any, session: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userRole = ((session?.user as any)?.role || "").toUpperCase();
+  if (!["OWNER", "MANAGER", "ACCOUNTANT", "EMPLOYEE"].includes(userRole)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  return getVehiclesHandler(req, context, session);
+});
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const POST = withAuth("vehicles.create", createVehicleHandler as any);
+export const POST = withAuth(undefined, async (req: Request, context: any, session: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userRole = ((session?.user as any)?.role || "").toUpperCase();
+  if (!["OWNER", "MANAGER", "ACCOUNTANT", "EMPLOYEE"].includes(userRole)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  return createVehicleHandler(req, context, session);
+});

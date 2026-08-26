@@ -110,10 +110,11 @@ export default function NewVehiclePage() {
             </div>
             <div>
               <label className="block text-sm font-bold text-slate-800 mb-1">الحالة (Status)</label>
-              <select name="status" className="w-full px-4 py-2 border border-slate-300 bg-white text-slate-900 font-medium rounded-md focus:ring-2 focus:ring-blue-500">
-                <option value="AVAILABLE">جاهز (Available)</option>
-                <option value="MAINTENANCE">تحت الإصلاح (Maintenance)</option>
-                <option value="SOLD">مباع (Sold)</option>
+              <select name="status" defaultValue="PURCHASED" className="w-full px-4 py-2 border border-slate-300 bg-white text-slate-900 font-medium rounded-md focus:ring-2 focus:ring-blue-500">
+                <option value="PURCHASED">تم الشراء (Purchased)</option>
+                <option value="INSPECTION">قيد الفحص (Inspection)</option>
+                <option value="UNDER_REPAIR">تحت الإصلاح (Under Repair)</option>
+                <option value="READY_FOR_SALE">جاهز للبيع (Ready for Sale)</option>
               </select>
             </div>
           </div>

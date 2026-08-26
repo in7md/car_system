@@ -48,16 +48,28 @@ export default function EmployeeDashboard() {
             {session?.user?.name || "الموظف"}
           </h1>
           
-          {/* Main Action Button - Massive for Touch */}
-          <Link 
-            href="/expenses/new" 
-            className="w-full bg-white text-indigo-700 hover:bg-slate-50 text-lg font-black py-4 px-6 rounded-2xl shadow-xl transition-transform active:scale-95 flex items-center justify-center gap-3"
-          >
-            <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
-              <PlusCircle className="w-5 h-5" />
-            </div>
-            تسجيل مصروف / صيانة جديد
-          </Link>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Main Action Button - Massive for Touch */}
+            <Link 
+              href="/expenses/new" 
+              className="w-full bg-white text-indigo-700 hover:bg-slate-50 text-lg font-black py-4 px-6 rounded-2xl shadow-xl transition-transform active:scale-95 flex items-center justify-center gap-3"
+            >
+              <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                <PlusCircle className="w-5 h-5" />
+              </div>
+              تسجيل مصروف / صيانة
+            </Link>
+            
+            <Link 
+              href="/vehicles/new" 
+              className="w-full bg-indigo-500 hover:bg-indigo-400 text-white border border-indigo-400 text-lg font-black py-4 px-6 rounded-2xl shadow-xl transition-transform active:scale-95 flex items-center justify-center gap-3"
+            >
+              <div className="w-8 h-8 rounded-full bg-indigo-400 flex items-center justify-center">
+                <CarFront className="w-5 h-5 text-white" />
+              </div>
+              إضافة سيارة جديدة
+            </Link>
+          </div>
         </div>
       </div>
 
