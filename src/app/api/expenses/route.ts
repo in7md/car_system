@@ -49,10 +49,27 @@ async function createExpenseHandler(req: NextRequest, context: any, session: any
     
     const { vehicleId, categoryId, amount, date, description, vendorName, referenceNumber, status } = result.data;
 
-    let finalStatus = status;
-    // Force PENDING for regular Employees
-    if (userRole === "EMPLOYEE") {
-      finalStatus = "PENDING";
+    const finalStatus = status || "PAID";
+    // Direct approval requested, no pending force needed.
+
+    let finalCategoryId = categoryId;
+    
+    // If it's a fallback ID, we must find or create it in the database by name
+    if (categoryId.startsWith("fallback-")) {
+      const fallbackNames: Record<string, string> = {
+        "fallback-1": "ميكانيك", "fallback-2": "كهرباء", "fallback-3": "إطارات",
+        "fallback-4": "بطارية", "fallback-5": "صبغ", "fallback-6": "سمكرة",
+        "fallback-7": "قطع غيار", "fallback-8": "تنظيف", "fallback-9": "فحص",
+        "fallback-10": "نقل", "fallback-11": "تأمين", "fallback-12": "تسجيل",
+        "fallback-13": "مخالفات", "fallback-14": "أخرى",
+      };
+      const catName = fallbackNames[categoryId] || "أخرى";
+      
+      let dbCat = await prisma.expenseCategory.findUnique({ where: { name: catName } });
+      if (!dbCat) {
+        dbCat = await prisma.expenseCategory.create({ data: { name: catName } });
+      }
+      finalCategoryId = dbCat.id;
     }
 
     // Create the expense
@@ -64,7 +81,7 @@ async function createExpenseHandler(req: NextRequest, context: any, session: any
         vendorName,
         referenceNumber,
         status: finalStatus,
-        categoryId,
+        categoryId: finalCategoryId,
         vehicleId: vehicleId || null,
         createdById: userId
       },
@@ -77,7 +94,7 @@ async function createExpenseHandler(req: NextRequest, context: any, session: any
     
     // 1. High Amount Check
     const similarExpenses = await prisma.expense.findMany({
-      where: { categoryId, deletedAt: null }
+      where: { categoryId: finalCategoryId, deletedAt: null }
     });
     
     if (similarExpenses.length >= 3) {

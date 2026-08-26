@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { AlertCircle } from "lucide-react";
 
 export default function NewVehiclePage() {
   const router = useRouter();
@@ -38,7 +39,15 @@ export default function NewVehiclePage() {
 
       if (!res.ok) {
         const json = await res.json();
-        throw new Error(json.error || "Failed to create vehicle");
+        let errorMsg = json.error || "حدث خطأ غير معروف أثناء الإضافة.";
+        if (json.details) {
+          // Flatten zod errors
+          const fields = Object.keys(json.details).filter(k => k !== '_errors');
+          if (fields.length > 0) {
+            errorMsg += ` (الحقول المطلوبة: ${fields.join(', ')})`;
+          }
+        }
+        throw new Error(errorMsg);
       }
 
       router.push("/vehicles");
@@ -62,8 +71,9 @@ export default function NewVehiclePage() {
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-md shadow">
-          {error}
+        <div className="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl flex items-center gap-2">
+          <AlertCircle className="w-5 h-5" />
+          <span className="font-bold">{error}</span>
         </div>
       )}
 

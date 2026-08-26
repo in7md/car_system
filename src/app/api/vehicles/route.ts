@@ -80,9 +80,13 @@ async function createVehicleHandler(req: Request, context: any, session: any) {
     await logAudit("Vehicle Created", newVehicle.id, "Vehicle", userId, { vehicleCode });
 
     return NextResponse.json({ data: newVehicle }, { status: 201 });
-  } catch (error) {
-    console.error("POST vehicle error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("POST vehicle error:", err);
+    const error = err as { code?: string };
+    if (error.code === 'P2002') {
+      return NextResponse.json({ error: "السيارة موجودة مسبقاً (رقم اللوحة أو الشاسيه مكرر)." }, { status: 400 });
+    }
+    return NextResponse.json({ error: "حدث خطأ داخلي أثناء تسجيل السيارة." }, { status: 500 });
   }
 }
 

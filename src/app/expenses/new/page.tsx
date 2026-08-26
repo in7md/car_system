@@ -6,6 +6,23 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Camera, ScanSearch, CheckCircle2, AlertCircle } from "lucide-react";
 
+const FALLBACK_CATEGORIES = [
+  { id: "fallback-1", name: "ميكانيك" },
+  { id: "fallback-2", name: "كهرباء" },
+  { id: "fallback-3", name: "إطارات" },
+  { id: "fallback-4", name: "بطارية" },
+  { id: "fallback-5", name: "صبغ" },
+  { id: "fallback-6", name: "سمكرة" },
+  { id: "fallback-7", name: "قطع غيار" },
+  { id: "fallback-8", name: "تنظيف" },
+  { id: "fallback-9", name: "فحص" },
+  { id: "fallback-10", name: "نقل" },
+  { id: "fallback-11", name: "تأمين" },
+  { id: "fallback-12", name: "تسجيل" },
+  { id: "fallback-13", name: "مخالفات" },
+  { id: "fallback-14", name: "أخرى" },
+];
+
 function NewExpenseForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -30,19 +47,26 @@ function NewExpenseForm() {
     description: "",
     vendorName: "",
     referenceNumber: "",
-    status: "PENDING" // Default to pending for approval
+    status: "PAID" // Direct approval
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/vehicles?limit=200").then(r => r.json()),
-      fetch("/api/expenses/categories").then(r => r.json())
+      fetch("/api/vehicles?limit=200").then(r => r.json()).catch(() => ({ data: [] })),
+      fetch("/api/expenses/categories").then(r => r.json()).catch(() => ({ data: null }))
     ]).then(([vData, cData]) => {
       if (vData.data) setVehicles(vData.data);
-      if (cData.data) setCategories(cData.data);
-    }).catch(err => console.error("Error loading dropdown data:", err));
+      if (cData.data && cData.data.length > 0) {
+        setCategories(cData.data);
+      } else {
+        setCategories(FALLBACK_CATEGORIES);
+      }
+    }).catch(err => {
+      console.error("Error loading dropdown data:", err);
+      setCategories(FALLBACK_CATEGORIES);
+    });
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -205,13 +229,9 @@ function NewExpenseForm() {
             <input type="text" name="referenceNumber" value={formData.referenceNumber} onChange={handleChange} className="w-full px-4 py-3 border border-slate-300 bg-slate-50 text-slate-900 font-bold rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
           </div>
           
-          {/* Note on approval */}
-          <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold">
-            <span className="text-amber-600 font-bold">ملاحظة:</span> سيتم إرسال هذا المصروف للمراجعة والاعتماد المالي من قبل الإدارة. ولن يدخل في التكاليف حتى يتم الموافقة عليه (حالة PENDING).
-          </div>
           
           <button type="submit" disabled={loading} className="w-full bg-slate-900 hover:bg-slate-800 font-black text-white py-4 rounded-xl shadow-lg disabled:opacity-50 mt-4 transition-transform active:scale-95">
-            {loading ? "جاري الإرسال للموافقة..." : "حفظ وإرسال للاعتماد"}
+            {loading ? "جاري الإرسال..." : "حفظ واعتماد المصروف"}
           </button>
         </form>
       </div>
