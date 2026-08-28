@@ -2,10 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Car, Receipt, PlusCircle, Settings } from "lucide-react";
+import { LayoutDashboard, Car, Receipt, PlusCircle, Settings, LogOut } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 export default function MobileBottomNav({ role }: { role: string }) {
   const pathname = usePathname();
+
+  const handleLogout = () => {
+    signOut({ callbackUrl: "/auth/signin" });
+  };
 
   // Employee bottom nav
   if (role === "EMPLOYEE") {
@@ -27,6 +32,11 @@ export default function MobileBottomNav({ role }: { role: string }) {
           <Settings className="w-5 h-5" />
           <span className="text-[10px] font-bold">حسابي</span>
         </Link>
+
+        <button onClick={handleLogout} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-rose-500 hover:text-rose-600">
+          <LogOut className="w-5 h-5" />
+          <span className="text-[10px] font-bold">خروج</span>
+        </button>
       </div>
     );
   }
@@ -48,6 +58,11 @@ export default function MobileBottomNav({ role }: { role: string }) {
         <Receipt className="w-5 h-5" />
         <span className="text-[10px] font-bold">المصروفات</span>
       </Link>
+
+      <button onClick={handleLogout} className="flex flex-col items-center justify-center w-16 h-full gap-1 text-rose-500 hover:text-rose-600">
+        <LogOut className="w-5 h-5" />
+        <span className="text-[10px] font-bold">خروج</span>
+      </button>
     </div>
   );
 }
