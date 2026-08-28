@@ -2,6 +2,8 @@ import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withAuth } from "@/lib/authorize";
 
+export const dynamic = 'force-dynamic';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
 async function getKpisHandler(req: NextRequest, context: any, session: any) {
   try {

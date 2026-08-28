@@ -12,6 +12,12 @@ export const authOptions: NextAuthOptions = {
   // Credentials provider requires JWT session strategy
   session: { strategy: "jwt" as const },
   adapter: PrismaAdapter(prisma),
+  secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    signIn: "/auth/signin",
+    signOut: "/auth/signin",
+    error: "/auth/signin",
+  },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
@@ -95,8 +101,5 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     }
-  },
-  pages: {
-    signIn: "/auth/signin"
   }
 };

@@ -10,7 +10,9 @@ import { Plus, Wallet, TrendingUp, TrendingDown, Car, Activity, Receipt, PieChar
 
 const COLORS = ['#6366F1', '#10B981', '#F43F5E', '#F59E0B', '#8B5CF6', '#3B82F6'];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
@@ -29,6 +31,9 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function DashboardPage() {
+  const { status } = useSession();
+  const router = useRouter();
+  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [kpis, setKpis] = useState<any>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,6 +42,13 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/auth/signin");
+      return;
+    }
+
+    if (status === "loading") return;
+
     const fetchDashboard = async () => {
       try {
         const [kpiRes, chartRes] = await Promise.all([
@@ -44,8 +56,9 @@ export default function DashboardPage() {
           fetch("/api/dashboard/charts")
         ]);
 
-        if (kpiRes.status === 403 || chartRes.status === 403) {
-          throw new Error("لا تملك صلاحية الوصول إلى هذه الصفحة.");
+        if (kpiRes.status === 401 || kpiRes.status === 403 || chartRes.status === 401 || chartRes.status === 403) {
+          router.replace("/auth/signin");
+          return;
         }
         
         if (!kpiRes.ok || !chartRes.ok) throw new Error("Failed to load dashboard data");
@@ -61,8 +74,9 @@ export default function DashboardPage() {
         setLoading(false);
       }
     };
+
     fetchDashboard();
-  }, []);
+  }, [status, router]);
 
   if (loading) {
     return (

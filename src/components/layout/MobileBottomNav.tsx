@@ -9,7 +9,7 @@ export default function MobileBottomNav({ role }: { role: string }) {
   const pathname = usePathname();
 
   const handleLogout = () => {
-    signOut({ callbackUrl: "/auth/signin" });
+    signOut({ callbackUrl: "/auth/signin", redirect: true });
   };
 
   // Employee bottom nav

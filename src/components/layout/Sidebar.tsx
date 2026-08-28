@@ -60,7 +60,7 @@ export default function Sidebar({ role }: { role: string }) {
 
       <div className="p-4 border-t border-slate-800/60">
         <button
-          onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+          onClick={() => signOut({ callbackUrl: '/auth/signin', redirect: true })}
           className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors"
         >
           <LogOut className="w-5 h-5" />
