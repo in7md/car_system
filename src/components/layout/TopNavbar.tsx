@@ -34,8 +34,14 @@ export default function TopNavbar({ session, role }: { session: Session | null; 
     setIsProfileOpen(false);
   }, [pathname]);
 
-  const handleLogout = () => {
-    signOut({ callbackUrl: "/auth/signin", redirect: true });
+  const handleLogout = async () => {
+    try {
+      await signOut({ redirect: false });
+    } catch (err) {
+      console.error("SignOut error:", err);
+    } finally {
+      window.location.href = "/auth/signin";
+    }
   };
 
   const allNavItems = [

@@ -8,8 +8,14 @@ import { signOut } from "next-auth/react";
 export default function MobileBottomNav({ role }: { role: string }) {
   const pathname = usePathname();
 
-  const handleLogout = () => {
-    signOut({ callbackUrl: "/auth/signin", redirect: true });
+  const handleLogout = async () => {
+    try {
+      await signOut({ redirect: false });
+    } catch (err) {
+      console.error("SignOut error:", err);
+    } finally {
+      window.location.href = "/auth/signin";
+    }
   };
 
   // Employee bottom nav

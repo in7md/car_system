@@ -44,7 +44,15 @@ export default function Navbar() {
           <span className="text-slate-300 text-xs bg-slate-800 px-2 py-1 rounded">{role}</span>
         </div>
         <button 
-          onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+          onClick={async () => {
+            try {
+              await signOut({ redirect: false });
+            } catch (err) {
+              console.error(err);
+            } finally {
+              window.location.href = "/auth/signin";
+            }
+          }}
           className="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-md text-sm transition-colors"
         >
           تسجيل الخروج
