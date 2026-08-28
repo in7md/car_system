@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Logo from "@/components/Logo";
 
 export default function GeneralSettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -71,6 +72,16 @@ export default function GeneralSettingsPage() {
 
       <form onSubmit={handleSave} className="max-w-2xl space-y-6">
         
+        <div className="bg-gray-50 p-6 rounded border flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold mb-1">هوية النظام (الشعار)</h2>
+            <p className="text-sm text-slate-500 mb-4">هذا هو الشعار الافتراضي للنظام والمستخدم في كافة الواجهات والتقارير.</p>
+          </div>
+          <div className="p-4 bg-[#0F172A] rounded-xl shadow-inner">
+            <Logo />
+          </div>
+        </div>
+
         <div className="bg-gray-50 p-6 rounded border">
           <h2 className="text-lg font-bold mb-4">بيانات المعرض / الشركة</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

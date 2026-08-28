@@ -2,6 +2,7 @@
 
 import { Bell, Search, Menu } from "lucide-react";
 import { Session } from "next-auth";
+import Logo from "@/components/Logo";
 
 export default function TopNavbar({ session, role }: { session: Session | null; role: string }) {
   const userName = session?.user?.name || "مستخدم";
@@ -9,10 +10,13 @@ export default function TopNavbar({ session, role }: { session: Session | null; 
   return (
     <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm flex items-center justify-between px-4 md:px-8 z-10 sticky top-0">
       <div className="flex items-center gap-4">
-        {/* Mobile menu button (mock) */}
-        <button className="md:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-md">
-          <Menu className="w-6 h-6" />
-        </button>
+        {/* Mobile menu button (mock) & Logo */}
+        <div className="flex items-center gap-2 md:hidden">
+          <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-md">
+            <Menu className="w-6 h-6" />
+          </button>
+          <Logo className="h-6 w-auto" showText={true} />
+        </div>
         
         {/* Search Bar - Hidden on small screens */}
         <div className="hidden md:flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-100 transition-all w-64">

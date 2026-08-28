@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Car, Receipt, CreditCard, PieChart, Users, Settings, LogOut, CheckSquare, Sparkles, FileText } from "lucide-react";
 import { signOut } from "next-auth/react";
+import Logo from "@/components/Logo";
 
 export default function Sidebar({ role }: { role: string }) {
   const pathname = usePathname();
@@ -27,12 +28,7 @@ export default function Sidebar({ role }: { role: string }) {
   return (
     <div className="hidden md:flex flex-col w-64 bg-[#0F172A] text-slate-300 border-l border-slate-800 shadow-2xl transition-all duration-300 z-20">
       <div className="h-16 flex items-center justify-center border-b border-slate-800/60 px-6">
-        <h1 className="text-xl font-black tracking-tight text-white flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-            <span className="text-white text-lg leading-none">I</span>
-          </div>
-          InventraX
-        </h1>
+        <Logo />
       </div>
 
       <div className="flex-1 overflow-y-auto py-6 px-3 space-y-1 scrollbar-hide">

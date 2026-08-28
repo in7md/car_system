@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Logo from "@/components/Logo";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
@@ -38,9 +39,12 @@ export default function SignInPage() {
 
   return (
     <div className="flex h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg border border-gray-200">
+      <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg border border-gray-200 flex flex-col items-center">
+        <div className="mb-6 scale-125">
+          <Logo />
+        </div>
         <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-          {show2FA ? "Two-Factor Authentication" : "Sign In"}
+          {show2FA ? "Two-Factor Authentication" : "تسجيل الدخول"}
         </h2>
         {error && (
           <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
