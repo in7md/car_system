@@ -213,8 +213,11 @@ function NewExpenseForm() {
             <input type="number" name="amount" value={formData.amount} onChange={handleChange} min="0.01" step="0.01" required className="w-full px-4 py-3 border border-slate-300 bg-slate-50 text-slate-900 font-bold rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
           </div>
           <div>
-            <label className="block text-sm mb-1 font-bold text-slate-800">تاريخ الفاتورة *</label>
-            <input type="date" name="date" value={formData.date} onChange={handleChange} required className="w-full px-4 py-3 border border-slate-300 bg-slate-50 text-slate-900 font-bold rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
+            <label className="block text-sm mb-1 font-bold text-slate-800">
+              تاريخ الفاتورة
+              <span className="text-slate-500 font-normal mr-2 text-xs">(اختياري - افتراضياً تاريخ اليوم)</span>
+            </label>
+            <input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full px-4 py-3 border border-slate-300 bg-slate-50 text-slate-900 font-bold rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
           </div>
           <div>
             <label className="block text-sm mb-1 font-bold text-slate-800">البيان / الوصف</label>

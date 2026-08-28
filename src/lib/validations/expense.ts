@@ -2,7 +2,11 @@ import { z } from "zod";
 
 export const createExpenseSchema = z.object({
   amount: z.number().min(0.01, "Amount must be greater than 0"),
-  date: z.string().or(z.date()).transform(val => new Date(val).toISOString()),
+  date: z.union([z.string(), z.date(), z.literal(""), z.undefined(), z.null()])
+    .transform(val => {
+      if (!val) return new Date().toISOString();
+      return new Date(val).toISOString();
+    }),
   description: z.string().optional(),
   vendorName: z.string().optional(),
   referenceNumber: z.string().optional(),

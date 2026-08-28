@@ -76,7 +76,7 @@ async function createExpenseHandler(req: NextRequest, context: any, session: any
     const expense = await prisma.expense.create({
       data: {
         amount,
-        date: new Date(date),
+        date: date ? new Date(date) : new Date(),
         description,
         vendorName,
         referenceNumber,
