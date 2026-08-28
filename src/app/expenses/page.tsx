@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Search, Receipt, ChevronLeft, AlertTriangle } from "lucide-react";
+import { Plus, Search, Receipt, ChevronLeft, AlertTriangle, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
+import { useSession } from "next-auth/react";
 
 export default function ExpensesPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -11,6 +12,32 @@ export default function ExpensesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const { data: session } = useSession();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userRole = ((session?.user as any)?.role || "").toUpperCase();
+
+  const handleDeleteExpense = async (id: string) => {
+    if (!window.confirm("هل أنت متأكد من حذف هذا المصروف؟ لا يمكن التراجع عن هذا الإجراء.")) return;
+    
+    try {
+      setDeletingId(id);
+      const res = await fetch(`/api/expenses/${id}`, { method: "DELETE" });
+      
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error || "فشل في حذف المصروف");
+      }
+      
+      setExpenses(prev => prev.filter(e => e.id !== id));
+      alert("تم حذف المصروف بنجاح");
+    } catch (err: unknown) {
+      if (err instanceof Error) alert(err.message);
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   useEffect(() => {
     const fetchExpenses = async () => {
@@ -155,12 +182,25 @@ export default function ExpensesPage() {
                       }
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <Link 
-                        href={`/expenses/${e.id}`}
-                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-                      >
-                        <ChevronLeft className="w-5 h-5" />
-                      </Link>
+                      <div className="flex items-center justify-center gap-2">
+                        <Link 
+                          href={`/expenses/${e.id}`}
+                          className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                          title="عرض التفاصيل"
+                        >
+                          <ChevronLeft className="w-5 h-5" />
+                        </Link>
+                        {userRole === "OWNER" && (
+                          <button
+                            onClick={() => handleDeleteExpense(e.id)}
+                            disabled={deletingId === e.id}
+                            className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors disabled:opacity-50"
+                            title="حذف المصروف"
+                          >
+                            <Trash2 className={`w-4 h-4 ${deletingId === e.id ? 'animate-spin' : ''}`} />
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

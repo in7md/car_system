@@ -68,17 +68,23 @@ async function updateExpenseHandler(req: Request, context: { params: Promise<{ i
 async function deleteExpenseHandler(req: Request, context: { params: Promise<{ id: string }> }, session: any) {
   try {
     const { id } = await context.params;
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const userRole = ((session?.user as any)?.role || "").toUpperCase();
+    if (userRole !== "OWNER") {
+      return NextResponse.json({ error: "غير مصرح لك بحذف المصروفات، هذه الصلاحية مخصصة للمالك فقط" }, { status: 403 });
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const userId = (session.user as any).id;
-    const existing = await prisma.expense.findUnique({ where: { id, deletedAt: null } });
+    const existing = await prisma.expense.findUnique({ where: { id } });
     if (!existing) return NextResponse.json({ error: "Expense not found" }, { status: 404 });
 
-    await prisma.expense.update({
-      where: { id },
-      data: { deletedAt: new Date() }
+    await prisma.expense.delete({
+      where: { id }
     });
 
-    await logAudit("Expense Soft Deleted", id, "Expense", userId, { amount: existing.amount });
+    await logAudit("Expense Deleted", id, "Expense", userId, { amount: existing.amount });
 
     return NextResponse.json({ success: true });
   } catch (error) {
