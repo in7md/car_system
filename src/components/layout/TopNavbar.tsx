@@ -73,7 +73,7 @@ export default function TopNavbar({ session, role }: { session: Session | null; 
             >
               <Menu className="w-6 h-6" />
             </button>
-            <Logo className="h-6 w-auto" showText={true} />
+            <Logo className="h-10 w-auto min-w-[100px]" showText={true} />
           </div>
           
           {/* Search Bar - Hidden on small screens */}
@@ -149,7 +149,7 @@ export default function TopNavbar({ session, role }: { session: Session | null; 
           {/* Sidebar */}
           <div className="relative flex flex-col w-72 max-w-[80%] bg-[#0F172A] h-full shadow-2xl animate-in slide-in-from-right">
             <div className="flex items-center justify-between p-4 border-b border-slate-800">
-              <Logo className="h-6 w-auto" showText={true} />
+              <Logo className="h-10 w-auto min-w-[100px]" showText={true} />
               <button 
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-full transition-colors"

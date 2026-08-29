@@ -6,13 +6,13 @@ interface LogoProps {
   showText?: boolean;
 }
 
-export default function Logo({ className = "h-10 w-auto", showText = true }: LogoProps) {
+export default function Logo({ className = "h-12 w-auto", showText = true }: LogoProps) {
   return (
-    <div className="flex items-center gap-2 select-none">
-      <div className={`relative ${className} min-w-[120px]`}>
+    <div className="flex items-center justify-center select-none">
+      <div className={`relative ${className} flex items-center justify-center overflow-hidden rounded-xl`}>
         <Image 
           alt="CarOps Logo" 
-          className="object-contain w-full h-full mix-blend-multiply" 
+          className="object-contain w-full h-full" 
           height={200} 
           priority 
           src="/logo.jpg" 
